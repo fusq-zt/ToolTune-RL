@@ -1,0 +1,16 @@
+ToolTune-RL is the public project name for the ToolForge-RL 2.0 implementation.
+Copyright notices from the original project are retained in LICENSE.
+
+Qwen3-4B is supplied by the Qwen team under its own model license.
+Tool-Star is credited for public demonstrations and protocol references.
+ARPO is credited for entropy-guided branching as a research idea. This project
+implements its own full-vocabulary entropy / empirical-quantile adaptation.
+
+Training uses Hugging Face TRL 0.27.2, licensed under Apache-2.0.
+scripts/install_trl_adapter.py contains compatibility changes to its trainer;
+the applicable license is retained in licenses/TRL-Apache-2.0.txt.
+The trainer is installed as a dependency; no full third-party trainer is vendored.
+
+GSM8K, Hendrycks MATH, HotpotQA and Tool-Star SFT data retain their upstream
+terms. Full datasets and pretrained / fine-tuned weights are not distributed
+in this repository. examples/ contains authored, illustrative fixtures.
