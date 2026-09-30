@@ -1,0 +1,14 @@
+{
+  "task_id": "example:records-sum",
+  "family": "retrieve_then_compute",
+  "cluster_id": "example:records",
+  "question": "Find the sum of the recorded values of Luma and Vex.",
+  "answer": "68",
+  "verifier": "numeric",
+  "required_retrieval": true,
+  "documents": [
+    {"document_id": "luma", "title": "Luma", "text": "The recorded value of Luma is 27."},
+    {"document_id": "vex", "title": "Vex", "text": "The recorded value of Vex is 41."},
+    {"document_id": "orin", "title": "Orin", "text": "The recorded value of Orin is 15."}
+  ]
+}
