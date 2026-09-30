@@ -1,0 +1,15 @@
+{
+  "seed": 42,
+  "base_model": "Qwen/Qwen3-4B-Instruct-2507",
+  "lora": {"r": 32, "lora_alpha": 64, "lora_dropout": 0.0, "target_modules": "all-linear", "task_type": "CAUSAL_LM"},
+  "sft": {"learning_rate": 0.0001, "epochs": 1, "effective_batch_size": 32, "max_length": 6144, "warmup_ratio": 0.03},
+  "rl": {"learning_rate": 0.000005, "updates": 1000, "gradient_accumulation_steps": 32, "generation_batch_size": 32, "num_generations": 4, "save_steps": 125, "beta": 0.01, "epsilon": 0.2, "warmup_ratio": 0.03, "loss_type": "dr_grpo", "scale_rewards": false, "vllm_importance_sampling_correction": true, "vllm_importance_sampling_mode": "sequence_mask", "vllm_importance_sampling_cap": 3.0},
+  "rollout": {"temperature": 0.8, "max_calls": 5, "total_tokens": 6144, "model_tokens": 2048, "step_tokens": 768},
+  "methods": {
+    "G0": {"mode": "full", "efficiency": false},
+    "G1": {"mode": "full", "efficiency": true},
+    "G2": {"mode": "random", "efficiency": true},
+    "G3": {"mode": "entropy", "efficiency": true},
+    "G4": {"mode": "calibrated", "efficiency": true}
+  }
+}

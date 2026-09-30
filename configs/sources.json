@@ -1,0 +1,9 @@
+{
+  "model": {"repo": "Qwen/Qwen3-4B-Instruct-2507", "revision": "cdbee75f17c01a7cc42f958dc650907174af0554"},
+  "datasets": [
+    {"repo": "openai/gsm8k", "revision": "740312add88f781978c0658806c59bc2815b9866", "patterns": ["main/*train*.parquet", "README.md", "LICENSE*"]},
+    {"repo": "EleutherAI/hendrycks_math", "revision": "21a5633873b6a120296cce3e2df9d5550074f4a3", "patterns": ["*train*.parquet", "README.md", "LICENSE*"]},
+    {"repo": "hotpotqa/hotpot_qa", "revision": "1908d6afbbead072334abe2965f91bd2709910ab", "patterns": ["distractor/*train*.parquet", "README.md", "LICENSE*"]},
+    {"repo": "dongguanting/Tool-Star-SFT-54K", "revision": "f85b4fe0809a30a3b360b6f61689e462f79e2ec1", "patterns": ["final_sft_edition9_v2.json", "README.md", "LICENSE*"]}
+  ]
+}
