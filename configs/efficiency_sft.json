@@ -1,0 +1,10 @@
+{
+  "seed": 42,
+  "matched_rows": 181,
+  "replay_rows": 85,
+  "epochs": 2,
+  "learning_rate": 1e-5,
+  "gradient_accumulation_steps": 16,
+  "max_length": 6144,
+  "warmup_ratio": 0.03
+}

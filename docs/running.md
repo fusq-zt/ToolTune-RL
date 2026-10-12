@@ -103,3 +103,49 @@ python scripts/evaluate.py --model models/tooltune \
 ```
 
 评测统一使用贪心单轨迹，输出逐题轨迹和简要指标；宏平均通过率先按四类任务分别计算，再取平均。
+
+## 6. 正确低调用示范继续 SFT
+
+这一步从**合并 SFT 底座上的 G3 LoRA**继续训练。`--model` 仍是 `models/sft`，`--adapter` 是已选定的 G3 检查点；不要用合并后的 `models/tooltune` 再叠加 G3 或效率适配器。
+
+先从已有训练轨迹中完成来源、正确性、工具反馈与全文内容审核，准备两份配好的 JSONL：`low_call` 为正确低调用示范，`correct_random` 为同题固定随机正确示范。每份先放 181 条同题示范，再放完全相同的 85 条工具 replay，保持两份题目顺序一致。随机对照允许与低调用示范相同，不为扩大差距刻意排除。
+
+每行的数据合同如下；`messages` 使用实际模型的原生消息与工具格式，下面只展示字段结构：
+
+```json
+{
+  "task_id": "train-question-001",
+  "kind": "matched",
+  "training_split": "train",
+  "reviewed_correct": true,
+  "messages": [
+    {"role": "system", "content": "..."},
+    {"role": "user", "content": "..."},
+    {"role": "assistant", "content": "..."}
+  ]
+}
+```
+
+工具 replay 的 `kind` 为 `replay`，工具观察以原消息保留。入口用底座 tokenizer 重建 assistant-only 标签，保留工具反馈的 attention；如果同时提供 `input_ids`、`attention_mask`、`labels`，必须与重建结果完全一致。布尔标志只表示上游审核结论，不能替代实际内容审核；不要将开发或测试轨迹用于该步骤。
+
+```bash
+CUDA_VISIBLE_DEVICES=0 python scripts/train_efficiency_sft.py \
+  --model models/sft --adapter outputs/G3/checkpoint-N \
+  --data workspace/efficiency/low_call.jsonl \
+  --paired-data workspace/efficiency/correct_random.jsonl \
+  --arm low_call --output outputs/efficiency-low_call
+
+CUDA_VISIBLE_DEVICES=0 python scripts/train_efficiency_sft.py \
+  --model models/sft --adapter outputs/G3/checkpoint-N \
+  --data workspace/efficiency/correct_random.jsonl \
+  --paired-data workspace/efficiency/low_call.jsonl \
+  --arm correct_random --output outputs/efficiency-correct_random
+```
+
+共同配置见 [efficiency_sft.json](../configs/efficiency_sft.json)：学习率 `1e-5`、2 epoch、微批 1、累积 16，共 34 次更新，两个 epoch 的尾组均为 10。累积组的 CE 按实际有效目标 token 总数归一化，不把各微批的均值直接等权平均。两次运行都使用新优化器并从同一 G3 起点开始，必须使用独立的新输出目录。
+
+上例顺序执行，每次只让一个设备可见。入口只支持从指定 G3 适配器开始的新训练，不会覆盖已有输出目录，也不自动恢复失败任务。默认保存 `checkpoint-17`、`checkpoint-34`，另保存 `last-adapter`。
+
+在普通提示的 `dev_config.jsonl` 上比较两组，通过预先设定的质量与调用要求后冻结候选，再执行确认和最终测试。导出继续沿用第 5 节的脚本，`--base` 为 `models/sft`，`--adapter` 为新效率输出的 `checkpoint-34` 或 `last-adapter`。结果表在 [README](../README.md#实验结果) 中简述。
+
+该公开入口由实际训练流程整理，配套检查覆盖数据合同与损失归一化等 CPU 逻辑；整理后的入口未重新执行完整 GPU 训练。原始示范内容、权重与运行日志不随代码仓库分发，需要自行准备符合数据合同的已审核输入。
