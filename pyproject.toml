@@ -15,7 +15,7 @@ dependencies = ["rank-bm25==0.2.2"]
 dev = ["pytest>=8,<9"]
 train = [
   "torch==2.9.0", "transformers==4.57.6", "trl==0.27.2",
-  "peft==0.18.1", "accelerate==1.12.0", "vllm==0.12.0",
+  "peft==0.18.1", "accelerate==1.12.0", "vllm==0.28.0",
   "datasets==4.4.2", "datasketch==1.6.5", "math-verify==0.8.0"
 ]
 
